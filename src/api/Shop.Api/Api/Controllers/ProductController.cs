@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Api.Api.Attributes;
@@ -11,6 +12,7 @@ namespace Shop.Api.Api.Controllers
 {
     [Produces("application/json")]
     [Route("api/products")]
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly IProductBusinessComponent _productBusinessComponent;
@@ -57,7 +59,6 @@ namespace Shop.Api.Api.Controllers
 
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, _mapper.Map<Product>(product));
         }
-
 
         [HttpPut("{id:int}")]
         [SwaggerResponse(StatusCodes.Status200OK, typeof(Product))]

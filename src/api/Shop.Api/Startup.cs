@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shop.Api.Api.Attributes;
+using Shop.Api.Api.Middleware;
 using Shop.Api.Business;
 using Shop.Api.Data.Model;
 using Shop.Api.Data.Repositories;
@@ -41,7 +42,9 @@ namespace Shop.Api
             AddDatabase(services);
             AddAutomapperProfiles(services);
 
+            services.AddScoped<IBasketRepository, BasketRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IBasketBusinessComponent, BasketBusinessComponent>();
             services.AddScoped<IProductBusinessComponent, ProductBusinessComponent>();
 
             _serviceProvider = services.BuildServiceProvider();
@@ -63,6 +66,7 @@ namespace Shop.Api
 
             app.Map("/api", apiApp =>
             {
+                app.UseMiddleware<DummyAuthenticationMiddleware>();
                 app.UseMvc();
             });
 

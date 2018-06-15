@@ -8,21 +8,21 @@ namespace Shop.Api.Data.Repositories
 {
     public class ProductRepository : IProductRepository
     {
+        private readonly ShopDbContext _shopDbContext;
+
         public ProductRepository(ShopDbContext shopDbContext)
         {
-            ShopDbContext = shopDbContext;
+            _shopDbContext = shopDbContext;
         }
-
-        private ShopDbContext ShopDbContext { get; }
 
         public Task<int> GetProductCount()
         {
-            return ShopDbContext.Products.CountAsync();
+            return _shopDbContext.Products.CountAsync();
         }
 
         public Task<List<Product>> GetProducts(int page = 0, int pageSize = 0)
         {
-            IQueryable<Product> query = ShopDbContext.Products.Include(p => p.Stock);
+            IQueryable<Product> query = _shopDbContext.Products.Include(p => p.Stock);
 
             if (pageSize > 0)
             {
@@ -34,25 +34,25 @@ namespace Shop.Api.Data.Repositories
 
         public Task<Product> GetProductById(int id)
         {
-            return ShopDbContext.Products.FindAsync(id);
+            return _shopDbContext.Products.FindAsync(id);
         }
 
         public async Task AddProduct(Product product)
         {
-            await ShopDbContext.Products.AddAsync(product);
-            await ShopDbContext.SaveChangesAsync();
+            await _shopDbContext.Products.AddAsync(product);
+            await _shopDbContext.SaveChangesAsync();
         }
 
         public Task UpdateProduct(Product product)
         {
-            ShopDbContext.Products.Attach(product).State = EntityState.Modified;
-            return ShopDbContext.SaveChangesAsync();
+            _shopDbContext.Products.Attach(product).State = EntityState.Modified;
+            return _shopDbContext.SaveChangesAsync();
         }
 
         public Task DeleteProduct(Product product)
         {
-            ShopDbContext.Products.Remove(product);
-            return ShopDbContext.SaveChangesAsync();
+            _shopDbContext.Products.Remove(product);
+            return _shopDbContext.SaveChangesAsync();
         }
     }
 }
