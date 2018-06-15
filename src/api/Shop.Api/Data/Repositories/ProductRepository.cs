@@ -36,5 +36,23 @@ namespace Shop.Api.Data.Repositories
         {
             return ShopDbContext.Products.FindAsync(id);
         }
+
+        public async Task AddProduct(Product product)
+        {
+            await ShopDbContext.Products.AddAsync(product);
+            await ShopDbContext.SaveChangesAsync();
+        }
+
+        public Task UpdateProduct(Product product)
+        {
+            ShopDbContext.Products.Attach(product).State = EntityState.Modified;
+            return ShopDbContext.SaveChangesAsync();
+        }
+
+        public Task DeleteProduct(Product product)
+        {
+            ShopDbContext.Products.Remove(product);
+            return ShopDbContext.SaveChangesAsync();
+        }
     }
 }

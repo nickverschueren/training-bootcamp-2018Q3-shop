@@ -9,5 +9,8 @@ namespace Shop.Api.Business
         Task<List<Product>> GetProducts();
         Task<(List<Product> items, int total)> GetProductsPaged(int page, int pageSize);
         Task<Product> GetProductById(int id);
+        Task AddProduct(Product product);
+        Task UpdateProduct(Product product);
+        Task DeleteProduct(Product product);
     }
 }

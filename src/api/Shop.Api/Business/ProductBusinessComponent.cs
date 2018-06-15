@@ -30,5 +30,28 @@ namespace Shop.Api.Business
         {
             return _productsRepository.GetProductById(id);
         }
+
+        public Task AddProduct(Product product)
+        {
+            EnsureImageUri(product);
+            return _productsRepository.AddProduct(product);
+        }
+
+        public Task UpdateProduct(Product product)
+        {
+            EnsureImageUri(product);
+            return _productsRepository.UpdateProduct(product);
+        }
+
+        public Task DeleteProduct(Product product)
+        {
+            return _productsRepository.DeleteProduct(product);
+        }
+
+        private static void EnsureImageUri(Product product)
+        {
+            if (string.IsNullOrWhiteSpace(product.ImageUri))
+                product.ImageUri = "https://dummyimage.com/300x300.jpg";
+        }
     }
 }

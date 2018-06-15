@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shop.Api.Api.Middleware;
+using Shop.Api.Api.Attributes;
 using Shop.Api.Business;
 using Shop.Api.Data.Model;
 using Shop.Api.Data.Repositories;
@@ -35,7 +35,8 @@ namespace Shop.Api
         {
             services.AddEntityFrameworkSqlite();
             services.AddSingleton(_configuration);
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(o => o.Filters.Add(typeof(ErrorFormattingAttribute)))
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             AddSwagger(services);
             AddDatabase(services);
             AddAutomapperProfiles(services);
@@ -48,9 +49,12 @@ namespace Shop.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ShopDbInitializer initializer)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
-            initializer.Initialize().Wait();
+            serviceProvider.GetService<ShopDbInitializer>()
+                .Initialize().Wait();
+
+            ValidateModelAttribute.Mapper = serviceProvider.GetService<AutoMapper.IMapper>();
 
             if (env.IsDevelopment())
             {
@@ -59,7 +63,6 @@ namespace Shop.Api
 
             app.Map("/api", apiApp =>
             {
-                app.UseMiddleware<ErrorHandlerMiddleware>();
                 app.UseMvc();
             });
 
