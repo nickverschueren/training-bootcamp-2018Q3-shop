@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -73,9 +74,15 @@ namespace Shop.Api
             });
 
             UseSwagger(app);
-            app.UseStaticFiles();
             app.UseDefaultFiles();
-            app.UseWelcomePage();
+            app.UseStaticFiles();
+
+            // ASP fallback routing
+            // Any request not handled by previous middlewares will be rewriten to '/'
+            // and processed by the static file handlers 
+            app.UseRewriter(new RewriteOptions().AddRewrite("^.*$", "/", true));
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
         }
 
         private void AddAutomapperProfiles(IServiceCollection services)
