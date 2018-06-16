@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shop.Api.Business
 {
@@ -20,6 +21,8 @@ namespace Shop.Api.Business
         public int Count => _innerList.Count;
 
         public bool IsValid => _innerList.Count == 0;
+
+        public bool HasNotFound => _innerList.Any(e => e is BusinessError.NotFound);
 
         void ICollection<BusinessError>.CopyTo(BusinessError[] array, int arrayIndex) => _innerList.CopyTo(array, arrayIndex);
 

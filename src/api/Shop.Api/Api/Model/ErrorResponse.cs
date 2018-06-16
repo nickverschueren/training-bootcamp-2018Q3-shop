@@ -9,8 +9,12 @@ namespace Shop.Api.Api.Model
 
         public class NotFound : ErrorResponse
         {
+            public NotFound(string message = "The requested resource was not found")
+            {
+                Message = message;
+            }
             public override string Code => "Not Found";
-            public override string Message => "The requested resource was not found";
+            public override string Message { get; }
         }
 
         public class Validation : ErrorResponse

@@ -91,5 +91,18 @@ namespace Shop.Api.Api.Controllers
 
             return Ok(_mapper.Map<Product>(product));
         }
+
+        [HttpPut("{id:int}/reserved")]
+        [SwaggerResponse(StatusCodes.Status200OK, typeof(Product))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, typeof(ErrorResponse.Validation))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, typeof(ErrorResponse.NotFound))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, typeof(ErrorResponse.InternalServerError))]
+        [ValidateModel]
+        public async Task<ActionResult> UpdateProductReserved(int id, [FromBody] UpdateQuantity quantity)
+        {
+            var (product, errors) = await _productBusinessComponent.UpdateProductReserved(id, quantity.Quantity ?? 0);
+            if (errors.IsValid) return Ok(_mapper.Map<Product>(product));
+            return _mapper.Map<ActionResult>(errors);
+        }
     }
 }

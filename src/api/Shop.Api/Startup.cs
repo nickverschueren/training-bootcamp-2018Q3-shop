@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shop.Api.Api.Attributes;
 using Shop.Api.Api.Middleware;
 using Shop.Api.Business;
+using Shop.Api.Data;
 using Shop.Api.Data.Model;
 using Shop.Api.Data.Repositories;
 using Swashbuckle.AspNetCore.Swagger;
@@ -88,6 +89,7 @@ namespace Shop.Api
 
             services.AddDbContext<ShopDbContext>(options => { options.UseSqlite(connectionString); });
             services.AddSingleton<ShopDbInitializer>();
+            services.AddScoped<IShopDbTransactionManager, ShopDbTransactionManager>();
         }
 
         private void AddSwagger(IServiceCollection services)

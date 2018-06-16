@@ -12,5 +12,7 @@ namespace Shop.Api.Business
         Task AddProduct(Product product);
         Task UpdateProduct(Product product);
         Task DeleteProduct(Product product);
+        Task<(Product product, BusinessErrorCollection errors)>
+            UpdateProductReserved(int id, int quantity);
     }
 }

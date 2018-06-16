@@ -27,7 +27,7 @@ namespace Shop.Api.Api.Model
         public decimal? Price { get; set; }
         [Required]
         [Range(0, int.MaxValue)]
-        public decimal BasePrice { get; set; }
+        public decimal? BasePrice { get; set; }
         [Range(0, int.MaxValue)]
         public int? Stock { get; set; }
     }

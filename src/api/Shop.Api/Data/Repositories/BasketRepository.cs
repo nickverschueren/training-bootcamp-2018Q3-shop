@@ -20,6 +20,12 @@ namespace Shop.Api.Data.Repositories
                 .SingleOrDefaultAsync(b => b.UserId == userId);
         }
 
+        public Task DeleteBasket(Basket basket)
+        {
+            _shopDbContext.Baskets.Remove(basket);
+            return _shopDbContext.SaveChangesAsync();
+        }
+
         public async Task AddBasket(Basket basket)
         {
             await _shopDbContext.Baskets.AddAsync(basket);
@@ -41,6 +47,12 @@ namespace Shop.Api.Data.Repositories
         public Task UpdateBasketItem(BasketItem item)
         {
             _shopDbContext.BasketItems.Attach(item).State = EntityState.Modified;
+            return _shopDbContext.SaveChangesAsync();
+        }
+
+        public Task DeleteBasketItem(BasketItem item)
+        {
+            _shopDbContext.BasketItems.Remove(item);
             return _shopDbContext.SaveChangesAsync();
         }
     }
