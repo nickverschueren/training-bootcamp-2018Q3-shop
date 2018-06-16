@@ -50,17 +50,17 @@ namespace Shop.Api.Api.Controllers
         }
 
 
-        [HttpPost("products/{id:int}")]
+        [HttpPost("items/{productId:int}")]
         [SwaggerResponse(StatusCodes.Status201Created, typeof(Basket))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, typeof(ErrorResponse.Validation))]
         [SwaggerResponse(StatusCodes.Status404NotFound, typeof(ErrorResponse.NotFound))]
         [SwaggerResponse(StatusCodes.Status409Conflict, typeof(ErrorResponse.Conflict))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, typeof(ErrorResponse.InternalServerError))]
         [ValidateModel]
-        public async Task<ActionResult> AddProduct(int id, [FromBody] AddQuantity itemQuantity)
+        public async Task<ActionResult> AddProduct(int productId, [FromBody] AddQuantity itemQuantity)
         {
             var userId = User.Identity.Name;
-            var (basket, errors) = await _basketBusinessComponent.AddItemToBasket(userId, id, itemQuantity.Quantity ?? 0);
+            var (basket, errors) = await _basketBusinessComponent.AddItemToBasket(userId, productId, itemQuantity.Quantity ?? 0);
 
             if (errors.IsValid)
                 return Ok(_mapper.Map<Basket>(basket));
@@ -68,17 +68,17 @@ namespace Shop.Api.Api.Controllers
             return _mapper.Map<ActionResult>(errors);
         }
 
-        [HttpPatch("products/{id:int}")]
+        [HttpPatch("items/{productId:int}")]
         [SwaggerResponse(StatusCodes.Status201Created, typeof(Basket))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, typeof(ErrorResponse.Validation))]
         [SwaggerResponse(StatusCodes.Status404NotFound, typeof(ErrorResponse.NotFound))]
         [SwaggerResponse(StatusCodes.Status409Conflict, typeof(ErrorResponse.Conflict))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, typeof(ErrorResponse.InternalServerError))]
         [ValidateModel]
-        public async Task<ActionResult> UpdateProduct(int id, [FromBody] UpdateQuantity itemQuantity)
+        public async Task<ActionResult> UpdateProduct(int productId, [FromBody] UpdateQuantity itemQuantity)
         {
             var userId = User.Identity.Name;
-            var (basket, errors) = await _basketBusinessComponent.UpdateItemInBasket(userId, id, itemQuantity.Quantity ?? 0);
+            var (basket, errors) = await _basketBusinessComponent.UpdateItemInBasket(userId, productId, itemQuantity.Quantity ?? 0);
 
             if (errors.IsValid)
                 return Ok(_mapper.Map<Basket>(basket));
@@ -86,16 +86,16 @@ namespace Shop.Api.Api.Controllers
             return _mapper.Map<ActionResult>(errors);
         }
 
-        [HttpDelete("products/{id:int}")]
+        [HttpDelete("items/{productId:int}")]
         [SwaggerResponse(StatusCodes.Status201Created, typeof(Basket))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, typeof(ErrorResponse.Validation))]
         [SwaggerResponse(StatusCodes.Status404NotFound, typeof(ErrorResponse.NotFound))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, typeof(ErrorResponse.InternalServerError))]
         [ValidateModel]
-        public async Task<ActionResult> DeleteProduct(int id)
+        public async Task<ActionResult> DeleteProduct(int productId)
         {
             var userId = User.Identity.Name;
-            var (basket, errors) = await _basketBusinessComponent.DeleteItemInBasket(userId, id);
+            var (basket, errors) = await _basketBusinessComponent.DeleteItemInBasket(userId, productId);
 
             if (errors.IsValid)
                 return Ok(_mapper.Map<Basket>(basket));

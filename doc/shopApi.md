@@ -26,9 +26,9 @@ PUT /api/products/123 + { ... }
 DELETE /api/products/123
 
 GET /api/basket
-POST /api/basket/product/123 + { ... }
-PATCH /api/basket/product/123 + { ... }
-DELETE /api/basket/product/123
+POST /api/basket/items/123 + { ... }
+PATCH /api/basket/items/123 + { ... }
+DELETE /api/basket/items/123
 DELETE /api/basket
 
 #### Optional
@@ -67,7 +67,7 @@ Status Codes:
 
 * 200: OK
 
-### GET /api/product/123
+### GET /api/products/123
 
 Get a single product
 
@@ -135,7 +135,7 @@ Response Header:
 Status Codes:
 
 * 201: Created
-* 400: Bad Request (missing basePrice of title)
+* 400: Bad Request (missing basePrice or title)
 
 ### PUT /api/products/123
 
@@ -200,7 +200,7 @@ Remove an existing product
 Status Codes:
 
 * 200: OK
-* 204: No Content (when the resource was not found)
+* 404: Not Found (when the resource was not found)
 
 ---
 
@@ -228,7 +228,7 @@ Get the basket. Typically we get the basket based on the users identity. For now
 * 200: OK
 * 404: Not Found (there is no basket for this user)
 
-### POST /api/basket/product/123
+### POST /api/basket/items/123
 
 Add the product to the basket
 
@@ -256,10 +256,10 @@ Add the product to the basket
 
 * 200: OK
 * 400: Bad Request
-* 404: Not Found
+* 404: Not Found (when the product was not found)
 * 409: Conflict (business rule failed: when there are not enough products in stock)
 
-### PATCH /api/basket/product/123
+### PATCH /api/basket/items/123
 
 Update the product quantity from the specified basket
 
@@ -287,10 +287,10 @@ Update the product quantity from the specified basket
 
 * 200: OK
 * 400: Bad Request
-* 404: Not Found
+* 404: Not Found (when the product was not found on the basket, not basket found or product not found)
 * 409: Conflict (business rule failed: when there are not enough products in stock)
 
-### DELETE /api/basket/product/123
+### DELETE /api/basket/items/123
 
 Remove a product from the basket
 
@@ -308,7 +308,7 @@ Remove a product from the basket
 Status Codes:
 
 * 200: OK
-* 404: Not Found (when the product was not found on the basket)
+* 404: Not Found (when the product was not found on the basket, not basket found or product not found)
 
 ### DELETE /api/basket
 
@@ -326,7 +326,7 @@ Remove an basket completely
 Status Codes:
 
 * 200: OK
-* 204: No Content (no basket found)
+* 404: Not Found (no basket found)
 
 ### Optional: PUT /api/products/123/reserve
 
