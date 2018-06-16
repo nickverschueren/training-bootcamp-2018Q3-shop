@@ -18,14 +18,14 @@ namespace Shop.Api.Business
                 .GetValue<string>("defaultImageUri");
         }
 
-        public Task<List<Product>> GetProducts()
+        public Task<List<Product>> GetProducts(string sort)
         {
-            return _productsRepository.GetProducts();
+            return _productsRepository.GetProducts(sort: sort);
         }
 
-        public async Task<(List<Product> items, int total)> GetProductsPaged(int page, int pageSize)
+        public async Task<(List<Product> items, int total)> GetProductsPaged(int page, int pageSize, string sort)
         {
-            var items = await _productsRepository.GetProducts(page, pageSize);
+            var items = await _productsRepository.GetProducts(page, pageSize, sort);
             var total = await _productsRepository.GetProductCount();
             return (items, total);
         }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shop.Api.Api.Attributes;
 using Shop.Api.Api.Middleware;
+using Shop.Api.Api.Model.Mapping;
 using Shop.Api.Business;
 using Shop.Api.Data;
 using Shop.Api.Data.Model;
@@ -47,6 +48,8 @@ namespace Shop.Api
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IBasketBusinessComponent, BasketBusinessComponent>();
             services.AddScoped<IProductBusinessComponent, ProductBusinessComponent>();
+
+            services.AddSingleton<IProductSortExpressionMapper, ProductSortExpressionMapper>();
 
             _serviceProvider = services.BuildServiceProvider();
             return _serviceProvider;

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Shop.Api.Api.Model.Mapping;
 using Shop.Api.Data.Model;
 
 namespace Shop.Api.Data.Repositories
@@ -9,10 +10,12 @@ namespace Shop.Api.Data.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly ShopDbContext _shopDbContext;
+        private readonly IProductSortExpressionMapper _productSortExpressionMapper;
 
-        public ProductRepository(ShopDbContext shopDbContext)
+        public ProductRepository(ShopDbContext shopDbContext, IProductSortExpressionMapper productSortExpressionMapper)
         {
             _shopDbContext = shopDbContext;
+            _productSortExpressionMapper = productSortExpressionMapper;
         }
 
         public Task<int> GetProductCount()
@@ -20,16 +23,17 @@ namespace Shop.Api.Data.Repositories
             return _shopDbContext.Products.CountAsync();
         }
 
-        public Task<List<Product>> GetProducts(int page = 0, int pageSize = 0)
+        public Task<List<Product>> GetProducts(int page = 0, int pageSize = 0, string sort = null)
         {
             IQueryable<Product> query = _shopDbContext.Products.Include(p => p.Stock);
+            query = _productSortExpressionMapper.ApplySortExpression(query, sort, p => p.Id);
 
             if (pageSize > 0)
             {
                 query = query.Skip(pageSize * page).Take(pageSize);
             }
 
-            return query.OrderBy(p => p.Id).ToListAsync();
+            return query.ToListAsync();
         }
 
         public Task<Product> GetProductById(int id)

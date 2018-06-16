@@ -20,9 +20,11 @@ namespace Shop.Api.Data.Model.Mapping
                 .HasMaxLength(1000);
 
             product.Property(p => p.BasePrice)
+                .HasColumnType("REAL")
                 .IsRequired();
 
             product.Property(p => p.Price)
+                .HasColumnType("REAL")
                 .IsRequired();
 
             product.Property(p => p.ImageUri)

@@ -28,6 +28,18 @@ namespace Shop.Api.Api.Model
                 public string Key { get; set; }
                 public string Message { get; set; }
             }
+
+            public static readonly Validation InvalidSortExpression = new Validation
+            {
+                Errors = new List<ValidationItem>
+                {
+                    new ValidationItem
+                    {
+                        Key = "sort",
+                        Message = "Sort expession not valid"
+                    }
+                }
+            };
         }
 
         public class InternalServerError : ErrorResponse

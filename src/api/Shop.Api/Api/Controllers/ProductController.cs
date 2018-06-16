@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Api.Api.Attributes;
 using Shop.Api.Api.Model;
+using Shop.Api.Api.Model.Mapping;
 using Shop.Api.Business;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -17,23 +18,28 @@ namespace Shop.Api.Api.Controllers
     {
         private readonly IProductBusinessComponent _productBusinessComponent;
         private readonly IMapper _mapper;
+        private readonly IProductSortExpressionMapper _productSortExpressionMapper;
 
-        public ProductController(IProductBusinessComponent productBusinessComponent, IMapper mapper)
+        public ProductController(IProductBusinessComponent productBusinessComponent, IMapper mapper,
+            IProductSortExpressionMapper productSortExpressionMapper)
         {
             _productBusinessComponent = productBusinessComponent;
             _mapper = mapper;
+            _productSortExpressionMapper = productSortExpressionMapper;
         }
 
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, typeof(ProductCollection))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, typeof(ErrorResponse.InternalServerError))]
-        public async Task<ActionResult> GetProducts(int page = 0, int pageSize = 0)
+        public async Task<ActionResult> GetProducts(int page = 0, int pageSize = 0, string sort = null)
         {
+            if (!_productSortExpressionMapper.ValidateSortExpression(sort))
+                return BadRequest(ErrorResponse.Validation.InvalidSortExpression);
+
             if (pageSize > 0)
-            {
-                return Ok(_mapper.Map<ProductCollection>(await _productBusinessComponent.GetProductsPaged(page, pageSize)));
-            }
-            return Ok(_mapper.Map<ProductCollection>(await _productBusinessComponent.GetProducts()));
+                return Ok(_mapper.Map<ProductCollection>(await _productBusinessComponent.GetProductsPaged(page, pageSize, sort)));
+
+            return Ok(_mapper.Map<ProductCollection>(await _productBusinessComponent.GetProducts(sort)));
         }
 
         [HttpGet("{id:int}")]

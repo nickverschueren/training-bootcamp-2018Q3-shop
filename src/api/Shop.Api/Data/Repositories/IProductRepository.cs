@@ -6,7 +6,7 @@ namespace Shop.Api.Data.Repositories
 {
     public interface IProductRepository
     {
-        Task<List<Product>> GetProducts(int page = 0, int pageSize = 0);
+        Task<List<Product>> GetProducts(int page = 0, int pageSize = 0, string sort = null);
         Task<int> GetProductCount();
         Task<Product> GetProductById(int id);
         Task AddProduct(Product product);
