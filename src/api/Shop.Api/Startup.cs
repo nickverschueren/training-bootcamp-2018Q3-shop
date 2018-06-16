@@ -22,13 +22,11 @@ namespace Shop.Api
     {
         private const string SwaggerApiVersion = "v1";
 
-        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IConfiguration _configuration;
         private IServiceProvider _serviceProvider;
 
         public Startup(WebHostBuilderContext context)
         {
-            _hostingEnvironment = context.HostingEnvironment;
             _configuration = context.Configuration;
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Shop.Api.Data
+namespace Shop.Api.Helpers
 {
     public interface ITransactionManager : IDisposable
     {

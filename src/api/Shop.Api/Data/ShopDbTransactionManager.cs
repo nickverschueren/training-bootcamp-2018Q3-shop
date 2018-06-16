@@ -1,4 +1,5 @@
 ﻿using Shop.Api.Data.Model;
+using Shop.Api.Helpers;
 
 namespace Shop.Api.Data
 {

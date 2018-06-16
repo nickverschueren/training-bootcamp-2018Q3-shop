@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Shop.Api.Data
+namespace Shop.Api.Helpers
 {
     public class TransactionManager<T> : ITransactionManager where T : DbContext
     {

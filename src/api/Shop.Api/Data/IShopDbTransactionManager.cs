@@ -1,4 +1,6 @@
-﻿namespace Shop.Api.Data
+﻿using Shop.Api.Helpers;
+
+namespace Shop.Api.Data
 {
     public interface IShopDbTransactionManager : ITransactionManager
     {
