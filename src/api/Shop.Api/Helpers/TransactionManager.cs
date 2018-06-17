@@ -72,8 +72,10 @@ namespace Shop.Api.Helpers
 
         public void Dispose()
         {
-            if (_dbTransaction != null)
-                RollbackTransaction().Wait();
+            _lock.Wait();
+
+            _dbTransaction?.Rollback();
+            _dbTransaction = null;
         }
 
         ~TransactionManager()

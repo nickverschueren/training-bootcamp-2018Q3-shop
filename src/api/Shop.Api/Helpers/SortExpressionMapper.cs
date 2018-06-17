@@ -8,21 +8,34 @@ using System.Text.RegularExpressions;
 
 namespace Shop.Api.Helpers
 {
-    public abstract class SortExpressionMapper<TIn, TOut> : ISortExpressionMapper<TOut>
+    public abstract class SortExpressionMapper
+    {
+        protected static readonly MethodInfo OrderByMethod;
+        protected static readonly MethodInfo OrderByDescendingMethod;
+
+        static SortExpressionMapper()
+        {
+            var methods = typeof(Queryable).GetMethods(BindingFlags.Static | BindingFlags.Public);
+            OrderByMethod = methods.Single(m => m.Name == nameof(Queryable.OrderBy) &&
+                                                 m.GetParameters().Length == 2);
+            OrderByDescendingMethod = methods.Single(m => m.Name == nameof(Queryable.OrderByDescending) &&
+                                                           m.GetParameters().Length == 2);
+        }
+    }
+
+    public abstract class SortExpressionMapper<TIn, TOut> : SortExpressionMapper, ISortExpressionMapper<TOut>
     {
         private readonly Dictionary<string, LambdaExpression> _mappings;
-        private readonly MethodInfo _orderByMethod;
-        private readonly MethodInfo _orderByDescendingMethod;
 
         protected SortExpressionMapper()
         {
             _mappings = GetMappings();
 
-            var methods = typeof(Queryable).GetMethods(BindingFlags.Static | BindingFlags.Public);
-            _orderByMethod = methods.Single(m => m.Name == nameof(Queryable.OrderBy) &&
-                                                   m.GetParameters().Length == 2);
-            _orderByDescendingMethod = methods.Single(m => m.Name == nameof(Queryable.OrderByDescending) &&
-                                                             m.GetParameters().Length == 2);
+            OrderBy = (q, l) => (IQueryable<TOut>)OrderByMethod
+                .MakeGenericMethod(typeof(TOut), l.Body.Type).Invoke(null, new object[] { q, l });
+
+            OrderByDescending = (q, l) => (IQueryable<TOut>)OrderByDescendingMethod
+                .MakeGenericMethod(typeof(TOut), l.Body.Type).Invoke(null, new object[] { q, l });
         }
 
         protected void SetMapping<TProperty>(string sourcePropertyName, Expression<Func<TOut, TProperty>> targetPropExpression)
@@ -33,25 +46,6 @@ namespace Shop.Api.Helpers
         protected void RemoveMapping(string sourcePropertyName)
         {
             _mappings.Remove(sourcePropertyName);
-        }
-
-        private Dictionary<string, LambdaExpression> GetMappings()
-        {
-            var mappings = new Dictionary<string, LambdaExpression>(
-                StringComparer.InvariantCultureIgnoreCase);
-            foreach (var inProperty in typeof(TIn).GetProperties())
-            {
-                var mapping = typeof(TOut).GetProperty(inProperty.Name);
-                if (mapping != null)
-                {
-                    var param = Expression.Parameter(typeof(TOut));
-                    var lambda = Expression.Lambda(Expression.Property(param, mapping), param);
-
-                    mappings.Add(inProperty.Name, lambda);
-                }
-            }
-
-            return mappings;
         }
 
         public bool ValidateSortExpression(string sortExpression)
@@ -71,12 +65,10 @@ namespace Shop.Api.Helpers
                 return queryable;
 
             var lambda = _mappings[sort.field];
-            var parameters = new object[] { queryable, lambda };
 
-            if (sort.order != SortOrder.Descending)
-                queryable = (IQueryable<TOut>)_orderByMethod.MakeGenericMethod(typeof(TOut), lambda.Body.Type).Invoke(null, parameters);
-            else
-                queryable = (IQueryable<TOut>)_orderByDescendingMethod.MakeGenericMethod(typeof(TOut), lambda.Body.Type).Invoke(null, parameters);
+            queryable = sort.order != SortOrder.Descending ?
+                OrderBy(queryable, lambda) :
+                OrderByDescending(queryable, lambda);
 
             return queryable;
         }
@@ -100,6 +92,29 @@ namespace Shop.Api.Helpers
                 SortOrder.Ascending : SortOrder.Descending);
 
             return true;
+        }
+
+        private static Func<IQueryable<TOut>, LambdaExpression, IQueryable<TOut>> OrderBy { get; set; }
+
+        private static Func<IQueryable<TOut>, LambdaExpression, IQueryable<TOut>> OrderByDescending { get; set; }
+
+        private static Dictionary<string, LambdaExpression> GetMappings()
+        {
+            var mappings = new Dictionary<string, LambdaExpression>(
+                StringComparer.InvariantCultureIgnoreCase);
+            foreach (var inProperty in typeof(TIn).GetProperties())
+            {
+                var mapping = typeof(TOut).GetProperty(inProperty.Name);
+                if (mapping != null)
+                {
+                    var param = Expression.Parameter(typeof(TOut));
+                    var lambda = Expression.Lambda(Expression.Property(param, mapping), param);
+
+                    mappings.Add(inProperty.Name, lambda);
+                }
+            }
+
+            return mappings;
         }
     }
 }
